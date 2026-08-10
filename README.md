@@ -1,232 +1,78 @@
-<dependencies>
-    <!-- Spring Boot Starters -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-jpa</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-thymeleaf</artifactId>
-    </dependency>
+# 🏷️ Java Full Stack Online Price Tracker
 
-    <!-- Database -->
-    <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2</artifactId>
-        <scope>runtime</scope>
-    </dependency>
+A robust, full-stack web application built with Java, Spring Boot, and Thymeleaf designed to track product prices from e-commerce websites. The system automatically scrapes active URLs at scheduled intervals and displays live data on a clean dashboard.
 
-    <!-- Web Scraping Library -->
-    <dependency>
-        <groupId>org.jsoup</groupId>
-        <artifactId>jsoup</artifactId>
-        <version>1.17.2</version>
-    </dependency>
-</dependencies>
+---
 
-package com.tracker.model;
+## 🚀 Key Features
 
-import jakarta.persistence.*;
+* **Automated Web Scraping:** Uses `Jsoup` to dynamically extract accurate real-time values using CSS selectors.
+* **Smart Task Scheduling:** Leverages Spring `@Scheduled` cron automation to parse target web pages hourly.
+* **Live Analytics Dashboard:** Interactive UI built with Bootstrap and Thymeleaf to instantly monitor cost changes.
+* **Target Budget Alerts:** Automated threshold evaluation that flags items the moment price drops meet your goals.
+* **Persistent Local Database:** Configured with an embedded H2 data layer for rapid onboarding and lightweight testing.
 
-@Entity
-public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    private String name;
-    private String url;
-    private String cssSelector; // HTML class/id where price is located
-    private double currentPrice;
-    private double targetPrice;
+---
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getUrl() { return url; }
-    public void setUrl(String url) { this.url = url; }
-    public String getCssSelector() { return cssSelector; }
-    public void setCssSelector(String cssSelector) { this.cssSelector = cssSelector; }
-    public double getCurrentPrice() { return currentPrice; }
-    public void setCurrentPrice(double currentPrice) { this.currentPrice = currentPrice; }
-    public double getTargetPrice() { return targetPrice; }
-    public void setTargetPrice(double targetPrice) { this.targetPrice = targetPrice; }
-}
+## 🛠️ Tech Stack & Dependencies
 
-package com.tracker.repository;
+* **Backend Framework:** Spring Boot 3.x (Web, Data JPA)
+* **View Template Engine:** Thymeleaf
+* **Web Scraper Core:** Jsoup (Java HTML Parser)
+* **Database Engine:** In-Memory H2 Database
+* **UI Framework:** Bootstrap 5 (Responsive Layout CSS)
+* **Build Architecture:** Maven
 
-import com.tracker.model.Product;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+---
 
-@Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
-}
+## 📦 Local Installation Guide
 
-package com.tracker.service;
+Follow these simple steps to download, compile, and initialize this architecture locally.
 
-import com.tracker.model.Product;
-import com.tracker.repository.ProductRepository;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+### 1. Prerequisites
+Ensure you have the following installed on your machine:
+* Java Development Kit (JDK 17 or higher)
+* Apache Maven 3.x
+* Git CLI
 
-import java.io.IOException;
-import java.util.List;
+### 2. Clone the Repository
+```bash
+git clone https://github.com
+cd price-tracker-java
+```
 
-@Service
-public class PriceTrackerService {
+### 3. Compile and Run Application
+Execute the following Maven target inside your system terminal:
+```bash
+mvn spring-boot:run
+```
 
-    @Autowired
-    private ProductRepository productRepository;
+### 4. Access the Live Dashboard
+Open your local web browser application and clear routing paths toward:
+`http://localhost:8080`
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
-    }
+---
 
-    public Product saveProduct(Product product) {
-        product.setCurrentPrice(scrapePrice(product.getUrl(), product.getCssSelector()));
-        return productRepository.save(product);
-    }
+## 🖥️ Operational Guide
 
-    // Runs automatically every hour to refresh prices
-    @Scheduled(cron = "0 0 * * * *")
-    public void trackAllPrices() {
-        List<Product> products = productRepository.findAll();
-        for (Product product : products) {
-            double latestPrice = scrapePrice(product.getUrl(), product.getCssSelector());
-            if (latestPrice > 0) {
-                product.setCurrentPrice(latestPrice);
-                productRepository.save(product);
-                
-                if (latestPrice <= product.getTargetPrice()) {
-                    System.out.println("ALERT: " + product.getName() + " reached price goal!");
-                    // Trigger email alert logic here
-                }
-            }
-        }
-    }
+1. **Locate Target CSS Selector:** Navigate to your preferred e-commerce item window. Right-click the price tag text and choose **Inspect**. Identify its structural HTML token string class (e.g., `.price-tag-value` or `#item-price`).
+2. **Register a Product Tracking Task:** Populate the UI submission fields with the Item Name, Product Page URL, extracted CSS Selector token, and your designated budget Target Price limit.
+3. **Monitor Price Shifts:** The engine will instantly run its initial parse and register records inside your local tracked panel view. The background worker thread updates these fields continuously.
 
-    // Web scraping helper function
-    private double scrapePrice(String url, String selector) {
-        try {
-            Document doc = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
-                    .timeout(5000)
-                    .get();
-            
-            Element priceElement = doc.selectFirst(selector);
-            if (priceElement != null) {
-                String priceText = priceElement.text()
-                        .replaceAll("[^0-9.]", ""); // Strips currency signs and commas
-                return Double.parseDouble(priceText);
-            }
-        } catch (IOException | NumberFormatException e) {
-            System.err.println("Scraping failed for URL: " + url + " - " + e.getMessage());
-        }
-        return 0.0;
-    }
-}
+---
 
+## 🤝 Project Contribution
 
-package com.tracker.controller;
+Contributions make the open-source community an amazing place to learn, inspire, and create. 
 
-import com.tracker.model.Product;
-import com.tracker.service.PriceTrackerService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+1. Fork the Project Repository.
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the Branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
 
-@Controller
-public class ProductController {
+---
 
-    @Autowired
-    private PriceTrackerService trackerService;
+## 📜 License
 
-    @GetMapping("/")
-    public String index(Model model) {
-        model.annotation("products", trackerService.getAllProducts());
-        model.addAttribute("newProduct", new Product());
-        return "index";
-    }
-
-    @PostMapping("/add-product")
-    public String addProduct(Product product) {
-        trackerService.saveProduct(product);
-        return "redirect:/";
-    }
-}
-
-<!DOCTYPE html>
-<html xmlns:th="http://thymeleaf.org">
-<head>
-    <title>Java Price Tracker Dashboard</title>
-    <link rel="stylesheet" href="https://jsdelivr.net">
-</head>
-<body class="bg-light container py-5">
-
-    <h2 class="mb-4 text-center">🏷️ Java Full Stack Price Tracker</h2>
-
-    <!-- Add Product Form Card -->
-    <div class="card p-4 mb-5 shadow-sm">
-        <h4>Track a New Item</h4>
-        <form th:action="@{/add-product}" th:object="${newProduct}" method="POST" class="row g-3">
-            <div class="col-md-3">
-                <input type="text" th:field="*{name}" class="form-control" placeholder="Item Name (e.g. Laptop)" required>
-            </div>
-            <div class="col-md-4">
-                <input type="url" th:field="*{url}" class="form-control" placeholder="E-commerce Product Link" required>
-            </div>
-            <div class="col-md-3">
-                <input type="text" th:field="*{cssSelector}" class="form-control" placeholder="CSS Selector (e.g. .price)" required>
-            </div>
-            <div class="col-md-2">
-                <input type="number" step="0.01" th:field="*{targetPrice}" class="form-control" placeholder="Target Price" required>
-            </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary w-100">Start Tracking</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Monitored Items Dashboard -->
-    <div class="card p-4 shadow-sm">
-        <h4>Tracked Products Dashboard</h4>
-        <table class="table table-striped mt-3">
-            <thead class="table-dark">
-                <tr>
-                    <th>Item Name</th>
-                    <th>Current Value</th>
-                    <th>Your Limit</th>
-                    <th>Status</th>
-                    <th>Store Page</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="product : ${products}">
-                    <td th:text="${product.name}"></td>
-                    <td th:text="'$' + ${product.currentPrice}"></td>
-                    <td th:text="'$' + ${product.targetPrice}"></td>
-                    <td>
-                        <span th:if="${product.currentPrice <= product.targetPrice}" class="badge bg-success">Buy Now!</span>
-                        <span th:if="${product.currentPrice > product.targetPrice}" class="badge bg-warning text-dark">Waiting...</span>
-                    </td>
-                    <td><a th:href="${product.url}" target="_blank" class="btn btn-sm btn-outline-secondary">Visit Shop</a></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-</body>
-</html>
+Distributed under the MIT License. See `LICENSE` for more information.
