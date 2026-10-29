@@ -1,51 +1,54 @@
 # Online Price Tracker
 
-A web application project focused on tracking product prices and comparing them with target prices. The project description and setup details should always match the current source code.
+A web application concept for monitoring product prices, comparing them with target prices, and viewing tracked items in one place.
 
 ## Project goals
 
-- Track products by their product-page URLs.
-- Compare observed prices with a target price.
-- Present tracked products in a simple dashboard.
+- Track products using their product-page URLs.
+- Compare observed prices against user-defined target prices.
+- Present tracked items in a clear dashboard.
+- Make price changes easier to review.
 
 ## Technology
 
-The current project README describes Java 17+, Spring Boot, Jsoup, Spring Data JPA, H2, Thymeleaf, Bootstrap, and Maven. Confirm these against the project configuration before relying on them.
+The project has previously been described with the following stack. Verify each item against the source and build configuration before treating it as final:
 
-## Getting started
+- Java 17+
+- Spring Boot
+- Jsoup
+- Spring Data JPA
+- H2 Database
+- Thymeleaf and Bootstrap
+- Maven
 
-1. Install the JDK and build tools required by the project.
-2. Clone this repository:
+## Run locally
 
-```bash
-git clone https://github.com/parakandlabharath/Online-price-tracking.git
-cd Online-price-tracking
-```
+The repository currently contains project documentation only; application source and build files are not present on the default branch, so a verified run command cannot yet be provided.
 
-3. Check that the repository contains a Maven `pom.xml`. If it does, run:
+When the source is added, document the exact setup here, including:
 
-```bash
-mvn spring-boot:run
-```
-
-4. If the application starts successfully, open the local URL printed by Spring Boot (commonly `http://localhost:8080`).
+1. Required JDK and build tool versions.
+2. Database and application configuration.
+3. Commands to build and start the application.
+4. The local URL and any required environment variables.
 
 ## Screenshots
 
-Add genuine screenshots of the running application in a `screenshots/` folder, then link them here. Capture the actual interface rather than using mockups.
+Add screenshots captured from the actual running application in a `screenshots/` directory and link them here.
 
-## Before release
+## Roadmap
 
-- [ ] Verify setup on a fresh clone.
-- [ ] Confirm which websites and price selectors are supported.
-- [ ] Document configuration and error handling.
-- [ ] Add tests and screenshots.
-- [ ] Check that no credentials or API keys are committed.
+- [ ] Add application source and build configuration.
+- [ ] Document supported product sites and price extraction behavior.
+- [ ] Handle unavailable pages, changed page layouts, and request failures.
+- [ ] Add automated tests.
+- [ ] Add genuine screenshots and verified setup instructions.
+- [ ] Confirm that secrets and personal credentials are not committed.
 
 ## Notes
 
-E-commerce page structure and access rules can change. Automated requests may fail or be restricted by some websites.
+Product pages can change their structure or restrict automated requests. Price extraction should handle such failures gracefully and respect each website's terms and access rules.
 
 ## Contributing
 
-Create a feature branch, make a focused change, and open a pull request with a clear description.
+Use a focused branch, make a clearly scoped change, and describe how it was tested in the pull request.
