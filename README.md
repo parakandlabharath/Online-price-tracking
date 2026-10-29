@@ -1,78 +1,76 @@
-# 🏷️ Java Full Stack Online Price Tracker
+# Online Price Tracker
 
-A robust, full-stack web application built with Java, Spring Boot, and Thymeleaf designed to track product prices from e-commerce websites. The system automatically scrapes active URLs at scheduled intervals and displays live data on a clean dashboard.
+A Java full-stack web application for tracking product prices from e-commerce pages. Add a product URL and CSS selector to monitor its price, compare it with a target budget, and review tracked items from a browser dashboard.
 
----
+## Features
 
-## 🚀 Key Features
+- **Price extraction:** Uses Jsoup to read price information from product pages.
+- **Scheduled checks:** Spring scheduling runs price checks automatically.
+- **Budget monitoring:** Compare the latest price with a target price.
+- **Web dashboard:** Thymeleaf and Bootstrap provide the user interface.
+- **Local persistence:** Uses H2 with Spring Data JPA.
 
-* **Automated Web Scraping:** Uses `Jsoup` to dynamically extract accurate real-time values using CSS selectors.
-* **Smart Task Scheduling:** Leverages Spring `@Scheduled` cron automation to parse target web pages hourly.
-* **Live Analytics Dashboard:** Interactive UI built with Bootstrap and Thymeleaf to instantly monitor cost changes.
-* **Target Budget Alerts:** Automated threshold evaluation that flags items the moment price drops meet your goals.
-* **Persistent Local Database:** Configured with an embedded H2 data layer for rapid onboarding and lightweight testing.
+## Tech stack
 
----
+| Area | Technology |
+| --- | --- |
+| Language | Java 17+ |
+| Backend | Spring Boot |
+| HTML parsing | Jsoup |
+| Database | H2, Spring Data JPA |
+| UI | Thymeleaf, Bootstrap |
+| Build tool | Maven |
 
-## 🛠️ Tech Stack & Dependencies
+## Getting started
 
-* **Backend Framework:** Spring Boot 3.x (Web, Data JPA)
-* **View Template Engine:** Thymeleaf
-* **Web Scraper Core:** Jsoup (Java HTML Parser)
-* **Database Engine:** In-Memory H2 Database
-* **UI Framework:** Bootstrap 5 (Responsive Layout CSS)
-* **Build Architecture:** Maven
+### Prerequisites
 
----
+- JDK 17 or newer
+- Git
+- Maven, if the project does not include the Maven Wrapper
 
-## 📦 Local Installation Guide
+### 1. Clone the repository
 
-Follow these simple steps to download, compile, and initialize this architecture locally.
-
-### 1. Prerequisites
-Ensure you have the following installed on your machine:
-* Java Development Kit (JDK 17 or higher)
-* Apache Maven 3.x
-* Git CLI
-
-### 2. Clone the Repository
 ```bash
-git clone https://github.com
-cd price-tracker-java
+git clone https://github.com/parakandlabharath/Online-price-tracking.git
+cd Online-price-tracking
 ```
 
-### 3. Compile and Run Application
-Execute the following Maven target inside your system terminal:
+### 2. Run the application
+
+If Maven is installed:
+
 ```bash
 mvn spring-boot:run
 ```
 
-### 4. Access the Live Dashboard
-Open your local web browser application and clear routing paths toward:
-`http://localhost:8080`
+If the repository includes the Maven Wrapper, you can use `./mvnw spring-boot:run` on macOS/Linux or `mvnw.cmd spring-boot:run` on Windows.
 
----
+### 3. Open the dashboard
 
-## 🖥️ Operational Guide
+Visit [http://localhost:8080](http://localhost:8080) after the application starts.
 
-1. **Locate Target CSS Selector:** Navigate to your preferred e-commerce item window. Right-click the price tag text and choose **Inspect**. Identify its structural HTML token string class (e.g., `.price-tag-value` or `#item-price`).
-2. **Register a Product Tracking Task:** Populate the UI submission fields with the Item Name, Product Page URL, extracted CSS Selector token, and your designated budget Target Price limit.
-3. **Monitor Price Shifts:** The engine will instantly run its initial parse and register records inside your local tracked panel view. The background worker thread updates these fields continuously.
+## How to use
 
----
+1. Open the dashboard.
+2. Add a product name and product page URL.
+3. Provide the CSS selector used to locate the price on that page.
+4. Set a target price and save the product.
+5. Review tracked prices and compare them with your target.
 
-## 🤝 Project Contribution
+**Note:** E-commerce websites change their page structure and may restrict automated requests. A CSS selector that works on one page may not work on another.
 
-Contributions make the open-source community an amazing place to learn, inspire, and create. 
+## Project status
 
-1. Fork the Project Repository.
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the Branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
+This project is intended for learning and demonstration. Verify the supported websites and current application behaviour before relying on its price data.
 
----
+## Contributing
 
-## 📜 License
+1. Fork this repository.
+2. Create a branch: `git checkout -b feature/your-change`.
+3. Commit your changes: `git commit -m "Add your change"`.
+4. Push the branch and open a pull request.
 
-Distributed under the MIT License. See `LICENSE` for more information.
+## License
+
+See the [LICENSE](LICENSE) file if included in this repository.
