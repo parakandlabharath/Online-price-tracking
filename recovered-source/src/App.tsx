@@ -131,7 +131,7 @@ export default function App() {
     try {
       const updated = await refreshProductPrices(products);
       setProducts(updated);
-      showToast('Live prices re-checked successfully across online stores.');
+      showToast('Live price refresh is unavailable: no verified retailer data provider is configured.');
     } catch (err) {
       showToast('Failed to refresh prices. Using existing data.');
     } finally {
@@ -145,44 +145,9 @@ export default function App() {
     setIsAddModalOpen(true);
   };
 
-  // Simulate Test Price Drop
+  // Demo-only action: never alter tracked prices or create fake alerts.
   const handleSimulatePriceDrop = () => {
-    if (products.length === 0) return;
-    const randomProduct = products[Math.floor(Math.random() * products.length)];
-    const dropAmount = Math.round(randomProduct.currentPrice * 0.10);
-    const newPrice = Math.max(1000, randomProduct.currentPrice - dropAmount);
-
-    setProducts(prev => prev.map(p => {
-      if (p.id === randomProduct.id) {
-        return {
-          ...p,
-          currentPrice: newPrice,
-          lastChecked: 'Just now',
-          priceHistory: [
-            ...p.priceHistory,
-            { date: 'Today', price: newPrice, note: 'Live Flash Price Drop' }
-          ]
-        };
-      }
-      return p;
-    }));
-
-    const notif: NotificationItem = {
-      id: 'notif-' + Date.now(),
-      productId: randomProduct.id,
-      productTitle: randomProduct.title,
-      productImage: randomProduct.imageUrl,
-      oldPrice: randomProduct.currentPrice,
-      newPrice: newPrice,
-      store: randomProduct.storeName,
-      timestamp: 'Just now',
-      read: false,
-      type: 'price_drop',
-      message: `⚡ Live Price Drop Alert! Dropped by ${formatPrice(dropAmount)} to ${formatPrice(newPrice)}!`
-    };
-
-    setNotifications(prev => [notif, ...prev]);
-    showToast(`Price drop alert triggered for ${randomProduct.title.substring(0, 25)}...!`);
+    showToast('Demo only: simulated price changes are disabled to protect price accuracy.');
   };
 
   // Notification Drawer Handlers
@@ -360,7 +325,7 @@ export default function App() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">AI Deal & Price Trend Assistant</h2>
-                  <p className="text-xs text-slate-400">Ask Gemini 3.6 Flash about product deal history, seasonal price drops, and inflated MSRP fake discounts in Indian Rupees (₹).</p>
+                  <p className="text-xs text-slate-400">Ask the AI assistant for general shopping guidance. AI-generated prices and historical estimates are not verified retailer quotes.</p>
                 </div>
               </div>
 
