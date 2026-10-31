@@ -37,9 +37,10 @@ async function startServer() {
       const ai = getGeminiClient();
 
       if (!ai) {
-        // Fallback generator when API key is missing or invalid
-        const mockParsed = generateMockParsedProduct(urlOrQuery);
-        return res.json({ success: true, data: mockParsed });
+        return res.status(503).json({
+          success: false,
+          error: 'Product analysis is unavailable because GEMINI_API_KEY is not configured. No estimated or fabricated price was returned.'
+        });
       }
 
       const prompt = `You are an expert Indian online e-commerce price analyzer and fake discount investigator.
@@ -121,9 +122,10 @@ Format response STRICTLY as valid JSON.`;
       return res.json({ success: true, data: parsedData });
     } catch (err: any) {
       console.error('Error parsing product with Gemini:', err?.message || err);
-      // Fallback response on error
-      const fallbackData = generateMockParsedProduct(req.body.urlOrQuery || 'Product');
-      return res.json({ success: true, data: fallbackData, fallback: true });
+      return res.status(502).json({
+        success: false,
+        error: 'Product analysis failed. No price estimate was generated; please retry later.'
+      });
     }
   });
 
@@ -174,52 +176,18 @@ Provide a helpful, precise, clear 2-3 paragraph answer giving actionable shoppin
     }
   });
 
-  // API 3: Re-check prices
-  app.post('/api/product/refresh-prices', async (req, res) => {
-    try {
-      const { products } = req.body;
-      if (!Array.isArray(products)) {
-        return res.status(400).json({ error: 'products array is required' });
-      }
-
-      // Simulate subtle price updates & check for price drops
-      const updatedProducts = products.map((prod: any) => {
-        // Random 25% chance of price fluctuation
-        const priceChanged = Math.random() < 0.25;
-        if (!priceChanged) {
-          return { ...prod, lastChecked: 'Just now' };
-        }
-
-        // Generate small realistic change in INR
-        const changePct = (Math.random() * 0.10 - 0.06);
-        const oldPrice = prod.currentPrice;
-        let newPrice = Math.round(oldPrice * (1 + changePct));
-        // Round to nearest 10 or 90 for realistic Indian retail prices
-        newPrice = Math.round(newPrice / 10) * 10;
-
-        if (newPrice < prod.historicalLowPrice) {
-          prod.historicalLowPrice = newPrice;
-        }
-
-        const priceHistory = [...prod.priceHistory, {
-          date: 'Today',
-          price: newPrice,
-          store: prod.storeName,
-          note: newPrice < oldPrice ? 'Live Price Drop' : 'Market Fluctuation'
-        }];
-
-        return {
-          ...prod,
-          currentPrice: newPrice,
-          lastChecked: 'Just now',
-          priceHistory
-        };
-      });
-
-      return res.json({ success: true, products: updatedProducts });
-    } catch (err) {
-      return res.status(500).json({ error: 'Failed to refresh prices' });
+  // API 3: Live price refresh is intentionally disabled until a verified retailer
+  // data provider is configured. Never fabricate price movements.
+  app.post('/api/product/refresh-prices', (req, res) => {
+    if (!Array.isArray(req.body?.products)) {
+      return res.status(400).json({ success: false, error: 'products array is required' });
     }
+
+    return res.status(501).json({
+      success: false,
+      refreshed: false,
+      error: 'Live retailer price tracking is not configured yet. Existing prices were left unchanged.'
+    });
   });
 
   // Health check
