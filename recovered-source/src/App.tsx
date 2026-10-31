@@ -388,7 +388,7 @@ export default function App() {
             </div>
             <span className="font-semibold text-slate-300">PricePulse India - Online Product Price Tracker (₹)</span>
           </div>
-          <p>© 2026 PricePulse AI. Verified real online prices across major Indian e-commerce retailers.</p>
+          <p>© 2026 PricePulse AI. Demo workspace. Live retailer price verification is not configured.</p>
         </div>
       </footer>
 
