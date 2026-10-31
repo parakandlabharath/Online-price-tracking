@@ -1,0 +1,58 @@
+name: Recover project source from archived ZIP
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/recover-source.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Extract archived project files
+        env:
+          ARCHIVE: "pricepulse---online-product-price-tracker.zip"
+        run: |
+          python - <<'PY'
+          import os, zipfile, shutil
+          archive = os.environ["ARCHIVE"]
+          target = "recovered-source"
+          if not os.path.isfile(archive):
+              raise SystemExit(f"Archive not found: {archive}")
+          with zipfile.ZipFile(archive) as z:
+              names = [n for n in z.namelist() if n and not n.startswith("__MACOSX/") and not n.endswith("/")]
+              roots = {n.split("/", 1)[0] for n in names}
+              strip = next(iter(roots)) + "/" if len(roots) == 1 and all("/" in n for n in names) else ""
+              for name in names:
+                  if name == archive or name.endswith(".zip") or "/.DS_Store" in name:
+                      continue
+                  relative = name[len(strip):] if strip and name.startswith(strip) else name
+                  if not relative or relative.startswith("../") or relative.startswith("/"):
+                      continue
+                  out = os.path.join(target, relative)
+                  os.makedirs(os.path.dirname(out), exist_ok=True)
+                  with z.open(name) as src, open(out, "wb") as dst:
+                      shutil.copyfileobj(src, dst)
+          print("Extracted files:")
+          for root, _, files in os.walk(target):
+              for f in files:
+                  print(os.path.join(root, f))
+          PY
+      - name: Commit recovered source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add recovered-source
+          if git diff --cached --quiet; then
+            echo "No new source files to commit."
+          else
+            git commit -m "Restore project source files from archived ZIP"
+            git push
+          fi
