@@ -1,0 +1,6 @@
+{
+  "name": "PricePulse - Online Product Price Tracker",
+  "description": "Track real online product prices, historical price drops, MSRP fake discount detection, and target price alerts across top online stores.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
