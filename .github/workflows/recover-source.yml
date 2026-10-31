@@ -40,6 +40,7 @@ jobs:
                   os.makedirs(os.path.dirname(out), exist_ok=True)
                   with z.open(name) as src, open(out, "wb") as dst:
                       shutil.copyfileobj(src, dst)
+          shutil.rmtree(os.path.join(target, ".git"), ignore_errors=True)
           print("Extracted files:")
           for root, _, files in os.walk(target):
               for f in files:
