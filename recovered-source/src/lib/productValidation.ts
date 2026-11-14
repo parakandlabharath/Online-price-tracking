@@ -54,7 +54,7 @@ export function validateImportedProducts(value: unknown): Product[] {
     if (!isText(item.lastChecked)) return fail('lastChecked');
     if (!Array.isArray(item.priceHistory) || !Array.isArray(item.storePrices) || !Array.isArray(item.tags)) return fail('history/store/tags arrays');
     if (!item.tags.every((tag) => typeof tag === 'string' && tag.length <= 60)) return fail('tags');
-    if (!item.priceHistory.every((point) => isRecord(point) && isText(point.date) && Number.isFinite(Date.parse(point.date)) && isPrice(point.price))) return fail('priceHistory');
+    if (!item.priceHistory.every((point) => isRecord(point) && isText(point.date) && isPrice(point.price))) return fail('priceHistory');
     if (!item.storePrices.every((store) => isRecord(store) && isText(store.storeName) && isPrice(store.price) &&
         typeof store.inStock === 'boolean' && isHttpUrl(store.url) && isText(store.lastUpdated) &&
         (store.originalPrice === undefined || isPrice(store.originalPrice)))) return fail('storePrices');
