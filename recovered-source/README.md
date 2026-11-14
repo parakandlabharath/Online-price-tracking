@@ -1,29 +1,26 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# PricePulse India application source
 
-# Run and deploy your AI Studio app
+This folder contains the React + TypeScript frontend and Express server.
 
-This contains everything you need to run your app locally.
+For the verified feature list, setup commands, data limitations and architecture, see the [repository README](../README.md).
 
-View your app in AI Studio: https://ai.studio/apps/c065b06e-8722-4d36-bf8e-df31625e5955
+## Run locally
 
-## Run Locally
+Requirements: Node.js 22 and npm.
 
-**Prerequisites:**  Node.js
+```bash
+npm install
+npm run dev
+```
 
+## Validate
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm run lint
+npm test
+npm run build
+```
 
+Optional Gemini features read `GEMINI_API_KEY` from the environment. Keep local environment files private.
 
-## Important limitations
-
-- Product analysis requires a valid `GEMINI_API_KEY`. If it is missing or the AI request fails, the API now returns an error instead of inventing a product price.
-- Live retailer price refresh is intentionally disabled. The previous implementation randomly changed prices and could present simulated values as live data.
-- Product watchlists and notifications are stored in browser LocalStorage. They are local to that browser and are not backed up to a shared database.
-- Demo products and historical price points are sample data, not verified retailer quotes.
-- Do not use this application for purchase decisions until a retailer data provider, historical price store, and scheduled alert service are integrated.
+**Price accuracy note:** retailer price refresh is not implemented. The refresh API returns HTTP 501 rather than inventing a new price. Sample data and AI-generated estimates are not verified live retailer offers.
