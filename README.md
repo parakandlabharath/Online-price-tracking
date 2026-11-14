@@ -1,61 +1,85 @@
-# Online Price Tracker
+# PricePulse India — Online Product Price Tracker
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Java-Backend-orange?logo=openjdk&logoColor=white" alt="Java" />
-  <img src="https://img.shields.io/badge/Spring%20Boot-Framework-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot" />
-  <img src="https://img.shields.io/badge/Price-Tracking-blue" alt="Price tracking" />
-  <img src="https://img.shields.io/badge/Status-Documentation%20Stage-lightgrey" alt="Documentation stage" />
-</p>
+PricePulse is a browser-based watchlist for organizing products, target prices, and price observations. It includes a dashboard, filters, product details, JSON backup/restore, notifications, and an optional AI shopping assistant.
 
-A web application concept for monitoring product prices, comparing them with target prices, and viewing tracked items in one place.
+> **Project status: in development.** This repository contains a React/TypeScript frontend and an Express API. It does not currently have a verified retailer feed or automatic live price monitoring. AI analysis is not proof of a current retailer price.
 
-## 🎯 Project goals
+## Current features
 
-- Track products using their product-page URLs.
-- Compare observed prices against user-defined target prices.
-- Present tracked items in a clear dashboard.
-- Make price changes easier to review.
+- Add products using an AI-assisted URL/query analysis endpoint (requires Gemini configuration).
+- Store a personal watchlist and notifications in browser local storage.
+- Search, filter, sort, favourite, update target prices, and remove tracked products.
+- Export and import the watchlist as JSON; imported records are validated before replacing current data.
+- View dashboard analytics and ask an optional AI shopping assistant.
+- Request a price refresh; the API deliberately returns HTTP 501 until a verified price provider is integrated.
 
-## 🧰 Technology
+## Technology
 
-The project has previously been described with the following stack. Verify each item against the source and build configuration before treating it as final:
+- React 19 + TypeScript
+- Vite 6
+- Express 4
+- Node.js 22
+- Optional Google Gemini API
 
-- Java 17+
-- Spring Boot
-- Jsoup
-- Spring Data JPA
-- H2 Database
-- Thymeleaf and Bootstrap
-- Maven
+## Run locally
 
-## 🚀 Run locally
+Prerequisites: Node.js 22 and npm.
 
-The repository currently contains project documentation only; application source and build files are not present on the default branch, so a verified run command cannot yet be provided.
+```bash
+git clone https://github.com/parakandlabharath/Online-price-tracking.git
+cd Online-price-tracking/recovered-source
+npm install
+npm run dev
+```
 
-When the source is added, document the exact setup here, including:
+Open the local address printed in the terminal (normally `http://localhost:3000`).
 
-1. Required JDK and build tool versions.
-2. Database and application configuration.
-3. Commands to build and start the application.
-4. The local URL and any required environment variables.
+Optional AI endpoints require `GEMINI_API_KEY`. Copy `.env.example` to `.env`, add the key locally, and never commit secrets.
 
-## 🖼️ Screenshots
+## Validate changes
 
-Add screenshots captured from the actual running application in a `screenshots/` directory and link them here.
+```bash
+npm run lint
+npm test
+npm run build
+```
 
-## 🗺️ Roadmap
+GitHub Actions runs TypeScript checks, unit tests, and a production build for application changes.
 
-- [ ] Add application source and build configuration.
-- [ ] Document supported product sites and price extraction behavior.
-- [ ] Handle unavailable pages, changed page layouts, and request failures.
-- [ ] Add automated tests.
-- [ ] Add genuine screenshots and verified setup instructions.
-- [ ] Confirm that secrets and personal credentials are not committed.
+## Data and accuracy notes
 
-## Notes
+- Watchlist and notifications are stored in the current browser's local storage. They do not automatically sync between devices or users.
+- JSON backup/restore is available. Keep backups somewhere separate from the laptop.
+- The AI endpoint can return estimates and generated comparisons. Verify every price, availability, MRP, historical range, and retailer link on the retailer's own page before purchasing.
+- The application does not yet collect verified historical prices.
+- The refresh endpoint returns an explicit unavailable response rather than inventing a price movement.
+- The current demo dataset is sample data and must not be mistaken for live offers.
 
-Product pages can change their structure or restrict automated requests. Price extraction should handle such failures gracefully and respect each website's terms and access rules.
+## Architecture
 
-## 🤝 Contributing
+```text
+React dashboard
+  ├── localStorage: watchlist + notifications
+  ├── Product import/export validation
+  └── Express API
+        ├── /api/product/parse       optional AI-assisted analysis
+        ├── /api/assistant/ask       optional AI shopping guidance
+        └── /api/product/refresh-prices  intentionally unavailable (501)
+```
 
-Use a focused branch, make a clearly scoped change, and describe how it was tested in the pull request.
+## Completion checklist
+
+- [x] Recovered source is organized under `recovered-source/`
+- [x] Type-check and production build workflow
+- [x] Validate imported watchlists before replacing current data
+- [x] Unit tests for import validation
+- [x] Avoid generating fake 30/60-day price-history observations
+- [ ] Add verified retailer price provider(s) and source timestamps
+- [ ] Persist user data beyond one browser/device (database + backup strategy)
+- [ ] Add tests for product analysis/API error handling and alert thresholds
+- [ ] Capture genuine screenshots from the running app in `screenshots/`
+- [ ] Verify clean-clone installation and end-to-end user flows
+
+## Interview explanation
+
+The frontend keeps the user's watchlist in local storage and derives filtered/sorted dashboard views from that state. The Express API provides optional AI-assisted analysis and shopping guidance. A dedicated validation module checks imported JSON records before they can replace the current watchlist. Live retailer monitoring is not implemented yet; the refresh endpoint explicitly reports that limitation instead of fabricating new prices.
