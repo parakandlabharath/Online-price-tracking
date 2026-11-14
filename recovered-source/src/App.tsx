@@ -87,23 +87,30 @@ export default function App() {
 
   // Add Product
   const handleAddProduct = (newProduct: Product) => {
-    setProducts(prev => [newProduct, ...prev]);
-    showToast(`Added "${newProduct.title.substring(0, 30)}..." to price tracker!`);
+    let validatedProduct: Product;
+    try {
+      validatedProduct = validateImportedProducts([newProduct])[0];
+    } catch (error) {
+      showToast(error instanceof Error ? `Product was not added: ${error.message}` : 'Product data is invalid.');
+      return;
+    }
+    setProducts(prev => [validatedProduct, ...prev.filter((product) => product.id !== validatedProduct.id)]);
+    showToast(`Added "${validatedProduct.title.substring(0, 30)}..." to price tracker!`);
 
     // If price is already below target, trigger notification
-    if (newProduct.currentPrice <= newProduct.targetPrice) {
+    if (validatedProduct.currentPrice <= validatedProduct.targetPrice) {
       const notif: NotificationItem = {
         id: 'notif-' + Date.now(),
-        productId: newProduct.id,
-        productTitle: newProduct.title,
-        productImage: newProduct.imageUrl,
-        oldPrice: newProduct.msrpPrice,
-        newPrice: newProduct.currentPrice,
-        store: newProduct.storeName,
+        productId: validatedProduct.id,
+        productTitle: validatedProduct.title,
+        productImage: validatedProduct.imageUrl,
+        oldPrice: validatedProduct.msrpPrice,
+        newPrice: validatedProduct.currentPrice,
+        store: validatedProduct.storeName,
         timestamp: 'Just now',
         read: false,
         type: 'target_reached',
-        message: `🎯 Target Price Reached! Currently ${formatPrice(newProduct.currentPrice)} on ${newProduct.storeName}.`
+        message: `🎯 Target Price Reached! Currently ${formatPrice(validatedProduct.currentPrice)} on ${validatedProduct.storeName}.`
       };
       setNotifications(prev => [notif, ...prev]);
     }
@@ -122,6 +129,10 @@ export default function App() {
 
   // Update Target Price
   const handleUpdateTargetPrice = (id: string, newTarget: number) => {
+    if (!Number.isFinite(newTarget) || newTarget < 0) {
+      showToast('Target price must be a valid non-negative amount.');
+      return;
+    }
     setProducts(prev => prev.map(p => p.id === id ? { ...p, targetPrice: newTarget } : p));
     showToast('Target price alert threshold updated.');
   };
