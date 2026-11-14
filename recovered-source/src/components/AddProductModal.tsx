@@ -66,21 +66,18 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
       currency: '₹',
       storeName: extractedResult.storeName || 'Amazon India',
       inStock: extractedResult.inStock,
-      rating: 4.6,
-      reviewsCount: Math.floor(Math.random() * 3000) + 120,
       targetPrice: targetPriceInput > 0 ? targetPriceInput : Math.round(extractedResult.currentPrice * 0.9),
-      lastChecked: 'Just now',
+      lastChecked: 'AI analysis — not retailer-verified',
       fakeDiscountRisk: extractedResult.fakeDiscountRisk || 'low',
-      fakeDiscountReason: extractedResult.fakeDiscountReason || 'Normal MRP verified.',
+      fakeDiscountReason: extractedResult.fakeDiscountReason || 'AI-generated assessment; verify the MRP with the retailer.',
       dealScore: extractedResult.dealScore || 80,
       buyRecommendation: extractedResult.buyRecommendation || 'FAIR_DEAL',
       priority: 'medium',
       isFavorite: false,
       tags: [extractedResult.category, extractedResult.buyRecommendation.replace('_', ' ')],
+      // Record only the value returned by the current analysis. Do not invent historical observations.
       priceHistory: [
-        { date: '60d ago', price: extractedResult.msrpPrice },
-        { date: '30d ago', price: Math.round(extractedResult.currentPrice * 1.05) },
-        { date: 'Today', price: extractedResult.currentPrice, note: 'Added to Tracker' }
+        { date: new Date().toISOString(), price: extractedResult.currentPrice, note: 'AI analysis — not retailer-verified' }
       ],
       storePrices: extractedResult.storePrices?.length > 0
         ? extractedResult.storePrices.map(sp => ({
@@ -123,7 +120,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
             </div>
             <div>
               <h3 className="font-semibold text-lg text-white">Track Online Price (INR)</h3>
-              <p className="text-xs text-slate-400">Paste Amazon India, Flipkart or store link to extract live price & MRP</p>
+              <p className="text-xs text-slate-400">Enter a product URL or search phrase for an AI-assisted estimate. Verify prices on the retailer site.</p>
             </div>
           </div>
           <button
@@ -207,7 +204,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
               <div className="flex items-center justify-between border-b border-slate-700/60 pb-3">
                 <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4" />
-                  Live Product Details Extracted
+                  AI Analysis Complete — Verify Before Saving
                 </span>
                 <span className="text-xs text-slate-400 bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700">
                   {extractedResult.storeName}
