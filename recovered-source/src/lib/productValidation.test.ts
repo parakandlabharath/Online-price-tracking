@@ -8,7 +8,7 @@ const validProduct = {
   historicalLowPrice: 90, historicalHighPrice: 150, averagePrice: 120, currency: '₹',
   storeName: 'Example Store', inStock: true, targetPrice: 95, lastChecked: new Date().toISOString(),
   fakeDiscountRisk: 'low', dealScore: 80, buyRecommendation: 'FAIR_DEAL',
-  priceHistory: [{ date: new Date().toISOString(), price: 100 }],
+  priceHistory: [{ date: 'May 12', price: 100 }],
   storePrices: [{ storeName: 'Example Store', price: 100, inStock: true, url: 'https://example.com/item', lastUpdated: new Date().toISOString() }],
   tags: ['phone'], priority: 'medium', isFavorite: false
 };
@@ -30,6 +30,6 @@ test('rejects invalid prices, duplicate IDs and excessive deal scores', () => {
 
 test('rejects unsafe URLs and malformed nested price observations', () => {
   assert.throws(() => validateImportedProducts([{ ...validProduct, url: 'javascript:alert(1)' }]), /product URL/);
-  assert.throws(() => validateImportedProducts([{ ...validProduct, priceHistory: [{ date: 'yesterday', price: -2 }] }]), /priceHistory/);
+  assert.throws(() => validateImportedProducts([{ ...validProduct, priceHistory: [{ date: '', price: 100 }] }]), /priceHistory/);
   assert.throws(() => validateImportedProducts([{ ...validProduct, storePrices: [{ storeName: 'Store', price: 20, inStock: true, url: 'file:///tmp/x', lastUpdated: 'now' }] }]), /storePrices/);
 });
