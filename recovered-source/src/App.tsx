@@ -24,13 +24,14 @@ import { AIBargainAssistantModal } from './components/AIBargainAssistantModal';
 import { ExportImportModal } from './components/ExportImportModal';
 import { refreshProductPrices, parseProductURLOrQuery } from './services/api';
 import { formatPrice } from './lib/formatters';
+import { validateImportedProducts } from './lib/productValidation';
 
 export default function App() {
   // Load products from LocalStorage or fall back to INITIAL_PRODUCTS
   const [products, setProducts] = useState<Product[]>(() => {
     try {
       const saved = localStorage.getItem('pricepulse_products');
-      if (saved) return JSON.parse(saved);
+      if (saved) return validateImportedProducts(JSON.parse(saved));
     } catch (e) {}
     return INITIAL_PRODUCTS;
   });
