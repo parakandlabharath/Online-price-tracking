@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Download, Upload, Check, Copy, FileText, RefreshCw } from 'lucide-react';
 import { Product } from '../types';
+import { validateImportedProducts } from '../lib/productValidation';
 
 interface ExportImportModalProps {
   isOpen: boolean;
@@ -48,16 +49,12 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
         setError('Please paste valid JSON data');
         return;
       }
-      const parsed = JSON.parse(jsonText);
-      if (!Array.isArray(parsed)) {
-        setError('Imported JSON must be an array of products');
-        return;
-      }
-      onImportProducts(parsed);
-      setSuccessMsg(`Successfully imported ${parsed.length} products!`);
+      const imported = validateImportedProducts(JSON.parse(jsonText) as unknown);
+      onImportProducts(imported);
+      setSuccessMsg(`Successfully imported ${imported.length} products!`);
       setJsonText('');
-    } catch (err: any) {
-      setError('Invalid JSON syntax. Please check formatting.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to import this backup file.');
     }
   };
 
