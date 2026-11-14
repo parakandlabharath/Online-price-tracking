@@ -9,7 +9,7 @@ PricePulse is a browser-based watchlist for organizing products, target prices, 
 - Add products using an AI-assisted URL/query analysis endpoint (requires Gemini configuration).
 - Store a personal watchlist and notifications in browser local storage.
 - Search, filter, sort, favourite, update target prices, and remove tracked products.
-- Export and import the watchlist as JSON; imported records are validated before replacing current data.
+- Export and import the watchlist as JSON; imported and browser-restored records are validated, including nested history/store records and HTTP(S) links.
 - View dashboard analytics and ask an optional AI shopping assistant.
 - Request a price refresh; the API deliberately returns HTTP 501 until a verified price provider is integrated.
 
@@ -71,7 +71,7 @@ React dashboard
 
 - [x] Recovered source is organized under `recovered-source/`
 - [x] Type-check and production build workflow
-- [x] Validate imported watchlists before replacing current data
+- [x] Validate imported and restored watchlists, including nested records and URL protocols
 - [x] Unit tests for import validation
 - [x] Avoid generating fake 30/60-day price-history observations
 - [ ] Add verified retailer price provider(s) and source timestamps
